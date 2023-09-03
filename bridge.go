@@ -13,14 +13,16 @@ import (
 const BufferBytes = 8 << 10
 
 type TCPListener struct {
-	Address       string
-	RemoteAddress string
+	Address        string
+	RemoteAddress  string
+	RemoteProtocol string
 }
 
 func NewTCPListener() *TCPListener {
 	return &TCPListener{
-		Address:       "localhost:28080",
-		RemoteAddress: "localhost:28081",
+		Address:        "localhost:28080",
+		RemoteAddress:  "localhost:28081",
+		RemoteProtocol: "ws",
 	}
 }
 
@@ -53,7 +55,7 @@ func (l *TCPListener) Listen() {
 // TranslateWebsocket makes Websocket connection with remote server
 // and call WebsocketConn.Handle.
 func (l *TCPListener) TranslateWebsocket(r io.Reader, w io.WriteCloser) error {
-	url := url.URL{Scheme: "ws", Host: l.RemoteAddress, Path: "/"}
+	url := url.URL{Scheme: l.RemoteProtocol, Host: l.RemoteAddress, Path: "/"}
 	conn, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
 	if err != nil {
 		log.Println("Failed to connect Websocket peer.")
